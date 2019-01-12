@@ -41,35 +41,67 @@ public class Main {
     public static String[] split(String string, char c) {
         ArrayList<String> tokens = new ArrayList<String>();
         int currentIndex = 0;
-        int lastCharIndex = -1;
         int charIndex = string.indexOf(c);
 
-        System.out.println(string.length());
-        while(currentIndex <= string.length()) {
-            System.out.println("Start");
-            System.out.println(currentIndex);
-            System.out.println(charIndex);
+        if(charIndex == -1) {
+            String[] array = {string};
+            return array;
+        }
+
+        while(currentIndex < string.length()) {
 
             String token;
-            if(charIndex == -1)
-            {
-                //add test here
+            if(charIndex == -1) {
                 token = string.substring(currentIndex);
-                currentIndex = string.length() + 1;
+                currentIndex = string.length();
+                tokens.add(token);
             }
-            else
-            {
-                token = string.substring(currentIndex, charIndex);
+            else if(currentIndex == charIndex) {
                 currentIndex = charIndex + 1;
             }
-            tokens.add(token);
+            else if(currentIndex < charIndex) {
+                token = string.substring(currentIndex, charIndex);
+                currentIndex = charIndex + 1;
+                tokens.add(token);
+            }
+
             charIndex = string.indexOf(c, currentIndex);
         }
 
         return tokens.toArray(new String[0]);
     }
 
+    public static boolean isInt(String string)
+    {
+        int i = 0;
+        if(string.charAt(0) == '-') {
+            i++;
+        }
+
+        for(; i < string.length(); i++) {
+            if(!isDigit(string.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isDigit(char c) {
+        char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        for(char digit : digits) {
+            if( digit == c) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void handleInput(String input) {
+        String test = "";
+        for (String token : test.split(" ")) {
+            System.out.println(token);
+        }
+
         String[] tokens = split(input, ' ');
         //String[] tokens = input.split(" ");
         if (tokens.length != 3) {
@@ -110,26 +142,71 @@ public class Main {
         int slashIndex = fraction.indexOf("/");
         return underscoreIndex < 0 && slashIndex < 0;
     }
+
+    public static String getWholeString(String fraction) {
+        int underscoreIndex = fraction.indexOf("_");
+
+        if(isFractionWholeAndFraction(fraction)) {
+            //it has a whole, numerator, and denominator
+            return fraction.substring(0, underscoreIndex);
+        }
+        else if(isFractionOnlyWhole(fraction)) {
+            //its a whole with no fraction
+            return fraction;
+        }
+        return "";
+    }
+
+    public static String getNumeratorString(String fraction) {
+        int underscoreIndex = fraction.indexOf("_");
+        int slashIndex = fraction.indexOf("/");
+
+        if(isFractionWholeAndFraction(fraction)) {
+            return fraction.substring(underscoreIndex+1, slashIndex);
+        }
+        else if(isFractionOnlyFraction(fraction)) {
+            return fraction.substring(0, slashIndex);
+        }
+        return "";
+    }
+
+    public static String getDenominatorString(String fraction) {
+        int slashIndex = fraction.indexOf("/");
+
+        if(isFractionWholeAndFraction(fraction) || isFractionOnlyFraction(fraction))
+        {
+            return fraction.substring(slashIndex+1);
+        }
+        return "";
+    }
+
         //Checks to make sure the underscore and slash in the fraction string are in valid locations.
     //does not check if what is between the underscore and slash is parseable
     public static boolean isFractionFormattedProperly(String fraction)
     {
         if(isFractionWholeAndFraction(fraction)) {
             //it has a whole, numerator, and denominator
-            return true;
+            String whole = getWholeString(fraction);
+            String numerator = getNumeratorString(fraction);
+            String denominator = getDenominatorString(fraction);
+            return isInt(whole) && isInt(numerator) && isInt(denominator);
         }
         else if (isFractionOnlyFraction(fraction)) {
             //numerator and denominator with no whole
-            return true;
+            String numerator = getNumeratorString(fraction);
+            String denominator = getDenominatorString(fraction);
+            return isInt(numerator) && isInt(denominator);
         }
         else if(isFractionOnlyWhole(fraction)) {
            //its a whole with no fraction
-            return true;
+            String whole = getWholeString(fraction);
+            return isInt(whole);
         }
 
         return false;
     }
 
+    //TODO: refactor parse methods
     public static int parseWhole(String fraction)
     {
         int underscoreIndex = fraction.indexOf("_");
