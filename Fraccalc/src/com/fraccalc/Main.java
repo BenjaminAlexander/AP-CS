@@ -53,6 +53,7 @@ public class Main {
             String token;
             if(charIndex == -1)
             {
+                //add test here
                 token = string.substring(currentIndex);
                 currentIndex = string.length() + 1;
             }
