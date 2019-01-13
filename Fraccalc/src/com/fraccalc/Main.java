@@ -7,7 +7,8 @@ public class Main {
 
     public static void main(String[] args) {
         //looper();
-        parser();
+        //parser();
+        littleCalc(1,2, '*', 2, 5);
         System.out.println("Program ended");
     }
 
@@ -57,6 +58,27 @@ public class Main {
             System.out.print("Enter something: ");
             input = userInput.nextLine();
         }
+    }
+
+    public static void littleCalc(int numerator1, int denominator1, char operator, int numerator2, int denominator2)
+    {
+        System.out.println(fractionString(numerator1, denominator1) + " " + operator + " " + fractionString(numerator2, denominator2));
+        if(operator == '+') {
+
+        }
+        else if(operator == '-') {
+
+        }
+        else if(operator == '*') {
+
+        }
+        else if(operator == '/') {
+
+        }
+    }
+
+    public static String fractionString(int numerator, int denominator) {
+        return numerator + "/" + denominator;
     }
 
     public static String[] split(String string, char c) {
