@@ -6,7 +6,8 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-        looper();
+        //looper();
+        parser();
         System.out.println("Program ended");
     }
 
@@ -15,25 +16,45 @@ public class Main {
         String input;
 
         //initial input request
-        System.out.println("Enter something: ");
+        System.out.print("Enter something: ");
         input = userInput.nextLine();
 
+        while (!input.equals("quit")) {
+            String[] tokens = split(input, ' ');
+            if (tokens.length != 3) {
+                System.out.println("ERROR: the input does not contain exactly 3 tokens.");
+            } else {
+                for (String token : tokens) {
+                    System.out.println(token);
+                }
+            }
+
+            //start the loop again
+            System.out.print("Enter something: ");
+            input = userInput.nextLine();
+        }
+    }
+
+    public static void parser() {
+        Scanner userInput = new Scanner(System.in);
+        String input;
+
+        //initial input request
+        System.out.print("Enter something: ");
+        input = userInput.nextLine();
 
         while (!input.equals("quit")) {
-            System.out.println("The input is: " + input);
-            handleInput(input);
-
-            /*
-            if(isFractionFormattedProperly(input)) {
+            if(isFractionParseable(input)) {
                 System.out.println(parseWhole(input));
                 System.out.println(parseNumerator(input));
+                System.out.println(parseDenominator(input));
             }
             else {
                 System.out.println("ERROR: fraction is improperly formatted.");
-            }*/
+            }
 
             //start the loop again
-            System.out.println("Enter something: ");
+            System.out.print("Enter something: ");
             input = userInput.nextLine();
         }
     }
@@ -71,10 +92,10 @@ public class Main {
         return tokens.toArray(new String[0]);
     }
 
-    public static boolean isInt(String string)
+    public static boolean isInt(String string, boolean canBeNegetive)
     {
         int i = 0;
-        if(string.charAt(0) == '-') {
+        if(canBeNegetive && string.charAt(0) == '-') {
             i++;
         }
 
@@ -97,24 +118,17 @@ public class Main {
     }
 
     public static void handleInput(String input) {
-        String test = "";
-        for (String token : test.split(" ")) {
-            System.out.println(token);
-        }
-
         String[] tokens = split(input, ' ');
-        //String[] tokens = input.split(" ");
         if (tokens.length != 3) {
             System.out.println("ERROR: the input does not contain exactly 3 tokens.");
         } else {
             for (String token : tokens) {
                 System.out.println(token);
             }
-            //parseWhole(tokens[0]);
         }
     }
 
-    public static boolean isFractionWholeAndFraction(String fraction) {
+    public static boolean isFractionFormatWholeAndFraction(String fraction) {
         int underscoreIndex = fraction.indexOf("_");
         int slashIndex = fraction.indexOf("/");
 
@@ -126,7 +140,7 @@ public class Main {
         return rtn;
     }
 
-    public static boolean isFractionOnlyFraction(String fraction) {
+    public static boolean isFractionFormatOnlyFraction(String fraction) {
         int underscoreIndex = fraction.indexOf("_");
         int slashIndex = fraction.indexOf("/");
 
@@ -137,115 +151,89 @@ public class Main {
         return rtn;
     }
 
-    public static boolean isFractionOnlyWhole(String fraction) {
+    public static boolean isFractionFormatOnlyWhole(String fraction) {
         int underscoreIndex = fraction.indexOf("_");
         int slashIndex = fraction.indexOf("/");
-        return underscoreIndex < 0 && slashIndex < 0;
+        return underscoreIndex < 0 && slashIndex < 0; //there must be no underscore or slash
+    }
+
+    public static boolean isFractionParseable(String fraction)
+    {
+        String whole = getWholeString(fraction);
+        String numerator = getNumeratorString(fraction);
+        String denominator = getDenominatorString(fraction);
+
+        boolean isParseable = whole != null || numerator != null || denominator != null;
+        isParseable = isParseable && (whole == null || isInt(whole, true));
+        isParseable = isParseable && (numerator == null || isInt(numerator, false));
+        isParseable = isParseable && (denominator == null || isInt(denominator, false));
+
+        return isParseable;
     }
 
     public static String getWholeString(String fraction) {
         int underscoreIndex = fraction.indexOf("_");
 
-        if(isFractionWholeAndFraction(fraction)) {
+        if(isFractionFormatWholeAndFraction(fraction)) {
             //it has a whole, numerator, and denominator
             return fraction.substring(0, underscoreIndex);
         }
-        else if(isFractionOnlyWhole(fraction)) {
+        else if(isFractionFormatOnlyWhole(fraction)) {
             //its a whole with no fraction
             return fraction;
         }
-        return "";
+        return null;
     }
 
     public static String getNumeratorString(String fraction) {
         int underscoreIndex = fraction.indexOf("_");
         int slashIndex = fraction.indexOf("/");
 
-        if(isFractionWholeAndFraction(fraction)) {
+        if(isFractionFormatWholeAndFraction(fraction)) {
             return fraction.substring(underscoreIndex+1, slashIndex);
         }
-        else if(isFractionOnlyFraction(fraction)) {
+        else if(isFractionFormatOnlyFraction(fraction)) {
             return fraction.substring(0, slashIndex);
         }
-        return "";
+        return null;
     }
 
     public static String getDenominatorString(String fraction) {
         int slashIndex = fraction.indexOf("/");
 
-        if(isFractionWholeAndFraction(fraction) || isFractionOnlyFraction(fraction))
+        if(isFractionFormatWholeAndFraction(fraction) || isFractionFormatOnlyFraction(fraction))
         {
             return fraction.substring(slashIndex+1);
         }
-        return "";
+        return null;
     }
 
-        //Checks to make sure the underscore and slash in the fraction string are in valid locations.
-    //does not check if what is between the underscore and slash is parseable
-    public static boolean isFractionFormattedProperly(String fraction)
-    {
-        if(isFractionWholeAndFraction(fraction)) {
-            //it has a whole, numerator, and denominator
-            String whole = getWholeString(fraction);
-            String numerator = getNumeratorString(fraction);
-            String denominator = getDenominatorString(fraction);
-            return isInt(whole) && isInt(numerator) && isInt(denominator);
-        }
-        else if (isFractionOnlyFraction(fraction)) {
-            //numerator and denominator with no whole
-            String numerator = getNumeratorString(fraction);
-            String denominator = getDenominatorString(fraction);
-            return isInt(numerator) && isInt(denominator);
-        }
-        else if(isFractionOnlyWhole(fraction)) {
-           //its a whole with no fraction
-            String whole = getWholeString(fraction);
-            return isInt(whole);
-        }
-
-        return false;
-    }
-
-    //TODO: refactor parse methods
-    public static int parseWhole(String fraction)
-    {
-        int underscoreIndex = fraction.indexOf("_");
-
-        if(isFractionWholeAndFraction(fraction)) {
-            //it has a whole, numerator, and denominator
-            String wholeString = fraction.substring(0, underscoreIndex);
+    public static int parseWhole(String fraction) {
+        String wholeString = getWholeString(fraction);
+        if( wholeString != null) {
             return Integer.parseInt(wholeString);
-        }
-        else if(isFractionOnlyWhole(fraction)) {
-            //its a whole with no fraction
-            return Integer.parseInt(fraction);
         }
         return 0;
     }
 
     public static int parseNumerator(String fraction) {
-        int underscoreIndex = fraction.indexOf("_");
-        int slashIndex = fraction.indexOf("/");
+        String numeratorString = getNumeratorString(fraction);
 
-        if(isFractionWholeAndFraction(fraction)) {
-            String numeratorString = fraction.substring(underscoreIndex+1, slashIndex);
-            int numberatorAbsoluteValue = Integer.parseInt(numeratorString);
+        if(numeratorString != null) {
             int whole = parseWhole(fraction);
-            return(whole / Math.abs(whole)) * numberatorAbsoluteValue;
-        }
-        else if(isFractionOnlyFraction(fraction)) {
-            String numeratorString = fraction.substring(0, slashIndex);
-            return Integer.parseInt(numeratorString);
+
+            int sign = 1;
+            if (whole != 0) {
+                sign = whole / Math.abs(whole);
+            }
+            return sign * Integer.parseInt(numeratorString);
         }
         return 0;
     }
 
     public static int parseDenominator(String fraction) {
-        int slashIndex = fraction.indexOf("/");
-
-        if(isFractionWholeAndFraction(fraction) || isFractionOnlyFraction(fraction))
-        {
-            String denominatorString = fraction.substring(slashIndex+1);
+        String denominatorString = getDenominatorString(fraction);
+        if( denominatorString != null) {
             return Integer.parseInt(denominatorString);
         }
         return 1;
