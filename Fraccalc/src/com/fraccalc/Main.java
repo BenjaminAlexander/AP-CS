@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         //looper();
         //parser();
-        littleCalc(1,2, '*', 2, 5);
+        littleCalc(1,-2, '-', 3, 5);
         System.out.println("Program ended");
     }
 
@@ -62,18 +62,51 @@ public class Main {
 
     public static void littleCalc(int numerator1, int denominator1, char operator, int numerator2, int denominator2)
     {
-        System.out.println(fractionString(numerator1, denominator1) + " " + operator + " " + fractionString(numerator2, denominator2));
-        if(operator == '+') {
+        int resultNumerator;
+        int resultDenominator;
 
+        if(operator == '+') {
+            resultNumerator = numerator1 * denominator2 + numerator2 * denominator1;
+            resultDenominator = denominator1 * denominator2;
         }
         else if(operator == '-') {
-
+            resultNumerator = numerator1 * denominator2 - numerator2 * denominator1;
+            resultDenominator = denominator1 * denominator2;
         }
         else if(operator == '*') {
-
+            resultNumerator = numerator1 * numerator2;
+            resultDenominator = denominator1 * denominator2;
         }
         else if(operator == '/') {
+            resultNumerator = numerator1 *  denominator2;
+            resultDenominator = denominator1 * numerator2;
+        }
+        else {
+            System.out.println("Operation not recognized.");
+            return;
+        }
+        String output = fractionString(numerator1, denominator1);
+        output += " " + operator + " ";
+        output += fractionString(numerator2, denominator2);
+        output += " = " + properFractionString(resultNumerator, resultDenominator);
+        System.out.println(output);
+    }
 
+    public static String properFractionString(int numerator, int denominator) {
+        int sign = (Math.abs(numerator) / numerator) * (Math.abs(denominator) / denominator);
+        numerator = Math.abs(numerator);
+        denominator = Math.abs(denominator);
+        int whole = 0;
+        while(numerator > denominator) {
+            numerator = numerator - denominator;
+            whole += 1;
+        }
+
+        if(whole == 0) {
+            return (sign * numerator) + "/" + denominator;
+        }
+        else {
+            return (sign * whole) + "_" + numerator + "/" + denominator;
         }
     }
 
@@ -187,7 +220,7 @@ public class Main {
 
         boolean isParseable = whole != null || numerator != null || denominator != null;
         isParseable = isParseable && (whole == null || isInt(whole, true));
-        isParseable = isParseable && (numerator == null || isInt(numerator, false));
+        isParseable = isParseable && (numerator == null || (whole == null && isInt(numerator, true)) || (whole != null && isInt(numerator, false)));
         isParseable = isParseable && (denominator == null || isInt(denominator, false));
 
         return isParseable;
