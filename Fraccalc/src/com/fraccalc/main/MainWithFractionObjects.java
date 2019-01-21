@@ -1,18 +1,12 @@
-package com.fraccalc;
+package com.fraccalc.main;
 
 import java.util.Scanner;
-import java.util.ArrayList;
 
 public class MainWithFractionObjects {
 
     public static void main(String[] args) {
-        ArrayList<Integer> factors = Utils.factor(0);
-        for(Integer num : factors) {
-            System.out.println(num);
-        }
-
         //looper();
-        //parser();
+        parser();
         //littleCalc(1,-2, '*', 3, 5);
         //fracCalc();
         System.out.println("Program ended");

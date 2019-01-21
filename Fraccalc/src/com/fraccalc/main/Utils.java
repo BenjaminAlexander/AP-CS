@@ -1,4 +1,4 @@
-package com.fraccalc;
+package com.fraccalc.main;
 
 import java.util.ArrayList;
 
@@ -84,15 +84,15 @@ public class Utils {
 
     public static ArrayList<Integer> factor(int number) {
         ArrayList<Integer> factors = new ArrayList<Integer>();
-        if(number == 0) {
-            factors.add(0);
+        if(number == 0 || number == 1) {
+            factors.add(number);
             return factors;
         }
 
         for(int i = 2; i < number; i++) {
             while(number%i == 0) {
                 factors.add(i);
-                number = number/2;
+                number = number/i;
             }
         }
         if(number > 1) {

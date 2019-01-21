@@ -1,4 +1,4 @@
-package com.fraccalc;
+package com.fraccalc.main;
 
 import java.util.Scanner;
 import java.util.ArrayList;
