@@ -1,13 +1,20 @@
 package com.fraccalc;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class MainWithFractionObjects {
 
     public static void main(String[] args) {
+        ArrayList<Integer> factors = Utils.factor(0);
+        for(Integer num : factors) {
+            System.out.println(num);
+        }
+
         //looper();
         //parser();
-        littleCalc(1,-2, '*', 3, 5);
+        //littleCalc(1,-2, '*', 3, 5);
+        //fracCalc();
         System.out.println("Program ended");
     }
 
@@ -19,7 +26,7 @@ public class MainWithFractionObjects {
         System.out.print("Enter something: ");
         input = userInput.nextLine();
 
-        while (!input.equals("quit")) {
+        while(!input.equals("quit")) {
             String[] tokens = Utils.split(input, ' ');
             if (tokens.length != 3) {
                 System.out.println("ERROR: the input does not contain exactly 3 tokens.");
@@ -89,27 +96,77 @@ public class MainWithFractionObjects {
         System.out.println(output);
     }
 
-    public static String fractionString(int numerator, int denominator) {
-        return numerator + "/" + denominator;
-    }
+    public static void fracCalc() {
+        Scanner userInput = new Scanner(System.in);
+        String input;
 
-    public static void handleInput(String input) {
-        String[] tokens = Utils.split(input, ' ');
-        if (tokens.length != 3) {
-            System.out.println("ERROR: the input does not contain exactly 3 tokens.");
-        } else {
-            for (String token : tokens) {
-                System.out.println(token);
+        //initial input request
+        System.out.print("Enter something: ");
+        input = userInput.nextLine();
+
+        while(!input.equals("quit")) {
+            if (!isExpressionValid(input)) {
+                System.out.println("ERROR: the input does not contain a valid expression.");
+            } else {
+                System.out.println(calculate(input));
             }
+
+            //start the loop again
+            System.out.print("Enter something: ");
+            input = userInput.nextLine();
         }
     }
 
+    public static boolean isExpressionValid(String expression) {
+        String[] tokens = Utils.split(expression, ' ');
+        int currentToken = 0;
+        while(currentToken < tokens.length) {
+            if(Fraction.isFractionParseable(tokens[currentToken]) &&
+                    (currentToken + 1 == tokens.length || (currentToken + 2 < tokens.length && Utils.isOperator(tokens[currentToken + 1])))) {
+                //next
+                currentToken += 2;
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
 
+    public static Fraction calculate(String expression) {
+        String[] tokens = Utils.split(expression, ' ');
+        int currentToken = 0;
+        Fraction sum = new Fraction(0);
+        String sumOperator = "+";
 
+        while(currentToken < tokens.length) {
+            Fraction product = new Fraction((tokens[currentToken]));
+            while (currentToken + 2 < tokens.length && Utils.isProductOperator(tokens[currentToken + 1])) {
+                String productOperator = tokens[currentToken + 1];
+                Fraction nextFraction = new Fraction(tokens[currentToken + 2]);
 
+                if (productOperator.equals("*")) {
+                    product = product.multiply(nextFraction);
+                }
+                else if (productOperator.equals("/")) {
+                    product = product.divide(nextFraction);
+                }
+                currentToken +=2;
+            }
 
+            if(sumOperator.equals("+")) {
+                sum = sum.add(product);
+            }
+            else if(sumOperator.equals("-")) {
+                sum = sum.subtract(product);
+            }
 
-
-
+            if(currentToken + 2 < tokens.length) {
+                sumOperator = tokens[currentToken + 1];
+            }
+            currentToken += 2;
+        }
+        return sum;
+    }
 }
 

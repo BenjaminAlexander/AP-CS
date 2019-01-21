@@ -1,5 +1,8 @@
 package com.fraccalc;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class Fraction {
     final int numerator;
     final int denominator;
@@ -116,7 +119,15 @@ public class Fraction {
     }
 
     public Fraction(int numerator, int denominator) {
-        int sign = (Math.abs(numerator) / numerator) * (Math.abs(denominator) / denominator);
+        int sign = 1;
+        if(numerator != 0) {
+            sign = (Math.abs(numerator) / numerator) * (Math.abs(denominator) / denominator);
+        }
+        ArrayList<Integer> numberatorFactors = Utils.factor(Math.abs(numerator));
+        ArrayList<Integer> denominatorFactors = Utils.factor(Math.abs(denominator));
+
+        //TODO: remove common factors and multiply together
+        
         this.numerator = sign * Math.abs(numerator);
         this.denominator = Math.abs(denominator);
     }
@@ -125,12 +136,25 @@ public class Fraction {
         this(whole * denominator + numerator, denominator);
     }
 
+    public Fraction(int whole) {
+        this(whole, 0, 1);
+    }
+
     public Fraction(String fraction) {
         this(parseWhole(fraction), parseNumerator(fraction), parseDenominator(fraction));
     }
 
+    public int getSign() {
+        if(numerator != 0) {
+            return (Math.abs(numerator) / numerator) * (Math.abs(denominator) / denominator);
+        }
+        else {
+            return 1;
+        }
+
+    }
+
     public int getProperWhole() {
-        int sign = (Math.abs(numerator) / numerator) * (Math.abs(denominator) / denominator);
         int numeratorAbsoluteValue = Math.abs(numerator);
         int denominatorAbsoluteValue = Math.abs(denominator);
         int wholeAbsoluteValue = 0;
@@ -138,17 +162,16 @@ public class Fraction {
             numeratorAbsoluteValue = numeratorAbsoluteValue - denominatorAbsoluteValue;
             wholeAbsoluteValue += 1;
         }
-        return sign * wholeAbsoluteValue;
+        return getSign() * wholeAbsoluteValue;
     }
 
     public int getProperNumerator() {
-        int sign = (Math.abs(numerator) / numerator) * (Math.abs(denominator) / denominator);
         int numeratorAbsoluteValue = Math.abs(numerator);
         int denominatorAbsoluteValue = Math.abs(denominator);
         while(numeratorAbsoluteValue > denominatorAbsoluteValue) {
             numeratorAbsoluteValue = numeratorAbsoluteValue - denominatorAbsoluteValue;
         }
-        return sign * numeratorAbsoluteValue;
+        return getSign() * numeratorAbsoluteValue;
     }
 
     public int getProperDenominator() {

@@ -61,4 +61,43 @@ public class Utils {
         }
         return false;
     }
+
+    public static boolean isOperator(String string) {
+        if(string == null) {
+            return false;
+        }
+        boolean isOperator = string.equals("*");
+        isOperator = isOperator || string.equals("/");
+        isOperator = isOperator || string.equals("+");
+        isOperator = isOperator || string.equals("-");
+        return isOperator;
+    }
+
+    public static boolean isProductOperator(String string) {
+        if(string == null) {
+            return false;
+        }
+        boolean isOperator = string.equals("*");
+        isOperator = isOperator || string.equals("/");
+        return isOperator;
+    }
+
+    public static ArrayList<Integer> factor(int number) {
+        ArrayList<Integer> factors = new ArrayList<Integer>();
+        if(number == 0) {
+            factors.add(0);
+            return factors;
+        }
+
+        for(int i = 2; i < number; i++) {
+            while(number%i == 0) {
+                factors.add(i);
+                number = number/2;
+            }
+        }
+        if(number > 1) {
+            factors.add(number);
+        }
+        return factors;
+    }
 }
