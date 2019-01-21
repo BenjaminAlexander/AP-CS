@@ -247,7 +247,7 @@ public class Fraction {
             return Integer.toString(properWhole);
         }
         else if(properWhole == 0 && properNumerator != 0) {
-            return Math.abs(properNumerator) + "/" + getProperDenominator();
+            return properNumerator + "/" + getProperDenominator();
         }
         else {
             return "0";

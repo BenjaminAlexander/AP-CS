@@ -6,9 +6,9 @@ public class MainWithFractionObjects {
 
     public static void main(String[] args) {
         //looper();
-        parser();
+        //parser();
         //littleCalc(1,-2, '*', 3, 5);
-        //fracCalc();
+        fracCalc();
         System.out.println("Program ended");
     }
 
